@@ -229,6 +229,7 @@ void ReadMesh::__build_mesh(std::string &faces_file, std::string &vertices_file)
     }
     else
     {
+        py::print(vertices_file);
         py::print("Error no vertex file is provided\n");
         exit(1);
     }
@@ -255,6 +256,7 @@ void ReadMesh::__build_mesh(std::string &faces_file, std::string &vertices_file)
     }
     else
     {
+        py::print(faces_file);
         py::print("Error no triangles file is provided\n");
         exit(1);
     }

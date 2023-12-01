@@ -18,8 +18,10 @@ print(system.box)
 
 #read the mesh
 N = 14 #pentagon size
-vertex_file = '../vertices_N' + str(N) + '.inp'
-face_file = '../faces_N' + str(N) + '.inp'
+vertex_file = '../InputFiles/vertices_N' + str(N) + '.inp'
+# vertex_file = 'pentagon_vertices.dat'
+face_file = '../InputFiles/faces_N' + str(N) + '.inp'
+# face_file = 'pentagon_faces.dat'
 system.read_mesh_from_files(files={'vertices':vertex_file, 'faces':face_file})
 
 

@@ -35,10 +35,10 @@ public:
             auto value = item.second;
             if (propname.compare("V") == 0)
             {
-                auto user_volumne = util::from_string_double(value);
-                if (user_volumne > 0.0)
+                auto user_volume = util::from_string_double(value);
+                if (user_volume > 0.0)
                 {
-                    m_target = user_volumne;
+                    m_target = user_volume;
                 }
                 else
                 {

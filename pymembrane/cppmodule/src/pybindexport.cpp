@@ -130,7 +130,6 @@ PYBIND11_MODULE(cppmodule, m)
     export_SystemClass(m);
     export_EvolverClass(m);
 
-
     //mesh
     export_PropertyFaces_Vector(m);
     export_PropertyVertices(m);

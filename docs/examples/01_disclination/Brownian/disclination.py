@@ -18,9 +18,10 @@ print(system.box)
 
 #read the mesh
 N = 14 #pentagon size
-vertex_file = '../vertices_N' + str(N) + '.inp'
-vertex_file = 'pentagon_vertices.dat'
-face_file = '../faces_N' + str(N) + '.inp'
+vertex_file = '/home/ipincus/fork_pymembrane/PyMembrane/docs/examples/01_disclination/InputFiles/vertices_N' + str(N) + '.inp'
+# vertex_file = 'pentagon_vertices.dat'
+face_file = '/home/ipincus/fork_pymembrane/PyMembrane/docs/examples/01_disclination/InputFiles/faces_N' + str(N) + '.inp'
+# face_file = 'pentagon_faces.dat'
 system.read_mesh_from_files(files={'vertices':vertex_file, 'faces':face_file})
 
 
