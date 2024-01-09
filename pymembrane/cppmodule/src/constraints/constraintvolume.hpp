@@ -51,8 +51,13 @@ public:
                     this->print_warning_calling_err(message);
                 }
             }
+            else if (propname.compare("tol") == 0)
+            {
+                m_tol = util::from_string_double(value);
+            }
+            else if (propname.compare("max_iter") == 0) ;
             else
-                this->set_property_common(region_map);
+                this->print_warning_property_name(propname);
         }
     }
 

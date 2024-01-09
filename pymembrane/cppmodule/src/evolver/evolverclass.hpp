@@ -48,6 +48,8 @@ namespace py = pybind11;
 #include "../potentials/potentialLimit.hpp"
 #include "../potentials/potentialLineTension.hpp"
 #include "../potentials/potentialConstantAreaTriangle.hpp"
+#include "../potentials/potentialConstantAreaGlobal.hpp"
+#include "../potentials/potentialConstantVolumeGlobal.hpp"
 #include "../potentials/potentialSubstrate.hpp"
 
 
@@ -85,6 +87,16 @@ public:
         else if (name.compare("Mesh>Constant Area") == 0)
         {
             mesh_force_list[name] = std::make_unique<ComputeVertexConstantAreaTriangleEnergy>(_system);
+            mesh_force_list[name]->set_property(parameters);
+        }
+        else if (name.compare("Mesh>Constant Global Area") == 0)
+        {
+            mesh_force_list[name] = std::make_unique<ComputeVertexConstantGlobalAreaEnergy>(_system);
+            mesh_force_list[name]->set_property(parameters);
+        }
+        else if (name.compare("Mesh>Constant Global Volume") == 0)
+        {
+            mesh_force_list[name] = std::make_unique<ComputeVertexConstantGlobalVolumeEnergy>(_system);
             mesh_force_list[name]->set_property(parameters);
         }
         else if (name.compare("Mesh>Bending") == 0)

@@ -32,6 +32,7 @@ void export_EvolverClass(py::module &m)
     py::class_<EvolverClass>(m, "Evolver")
         .def(py::init<SystemClass &>())
         //forces
+        .def("add_force", &EvolverClass::add_force<std::map<std::string, std::string>>, "add force method")
         .def("add_force", &EvolverClass::add_force<std::map<std::string, std::map<std::string, std::string>>>, "add force method")
         .def("add_force", &EvolverClass::add_force<std::map<std::string, std::map<std::pair<std::string, std::string>, std::string>>>, "add force method")
         .def("delete_force", &EvolverClass::delete_force, "delete force method")

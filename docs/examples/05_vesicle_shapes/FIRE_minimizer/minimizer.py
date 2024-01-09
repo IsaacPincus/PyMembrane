@@ -1,5 +1,6 @@
 #import the code
 import pymembrane as mb
+import os
 import numpy as np
 from pprint import pprint
 import argparse
@@ -21,11 +22,13 @@ plt.style.use(['science'])
 # snapshots = user_args.snapshots
 # max_iter = user_args.max_iter
 
-max_iter = 100
-snapshots = 10
+os.chdir('/home/ipincus/fork_pymembrane/PyMembrane/docs/examples/05_vesicle_shapes/FIRE_minimizer/')
 
-vertex_file = '/home/ipincus/fork_pymembrane/PyMembrane/docs/examples/05_vesicle_shapes/vertices_R1.0_l01.inp'
-face_file = '/home/ipincus/fork_pymembrane/PyMembrane/docs/examples/05_vesicle_shapes/faces_R1.0_l01.inp'
+max_iter = 100
+snapshots = 20
+
+vertex_file = 'vertices_R1.0_l01.inp'
+face_file = 'faces_R1.0_l01.inp'
 
 #create a system 
 box = mb.Box(40,40,40)
@@ -62,11 +65,14 @@ evolver.add_force("Mesh>Limit", {"lmin":{"0":lmin},
                                  "lmax":{"0":lmax}})
 
 # bending potential
-kappa = str(1.0)
-evolver.add_force("Mesh>Bending>Dihedral", {"kappa":{"0":kappa}})
+kappa = str(2.0)
+# evolver.add_force("Mesh>Bending>Dihedral", {"kappa":{"0":kappa}})
+evolver.add_force("Mesh>Bending>Helfrich", {"kappaH":{"0":kappa},
+                                            "H0":{"0":str(0)},
+                                            "kappaG":{"0":str(0)}})
 
 # Add the minimizer
-evolver.add_minimizer("Mesh>Fire", {"dt": str(1e-2),
+evolver.add_minimizer("Mesh>Fire", {"dt": str(1e-4),
                                     "max_iter": str(max_iter), 
                                     "ftol": str(1e-2), 
                                     "etol": str(1e-4)})
@@ -74,49 +80,75 @@ pprint(evolver.get_minimizer_info())
 
 # Add volume constraint
 initial_volume = compute.volume()
-evolver.add_constraint("Mesh>Volume", {"V": str(initial_volume), 
+evolver.add_constraint("Mesh>Volume", {"V": str(initial_volume*0.9), 
                                        "max_iter": str(10000), 
                                        "tol":str(1e-5)})
 
+# constant area potential
 initial_area = compute.area()
+target_area_per_face = initial_area/len(system.faces)
+kD = 1e4/target_area_per_face
+print(str(target_area_per_face))
 evolver.add_force("Mesh>Constant Area", {
-    "sigma": {"0": str(1e10)}
+    "sigma": {"1": str(kD)},
+    "target_area": {"1": str(target_area_per_face)}
 })
-# evolver.add_constraint("Mesh>Area", {"A": str(initial_area), 
-#                                        "max_iter": str(10000), 
-#                                        "tol":str(1e-2)})
 
 # Randomize the mesh to avoid initial freezing
-# rnd_move = 0.5*np.std(edge_lengths)/6.0
-# vertices = system.vertices
-# for vertex in vertices:
-#     vertex.r.x += np.random.uniform(-rnd_move, rnd_move)
-#     vertex.r.y += np.random.uniform(-rnd_move, rnd_move)
-#     vertex.r.z += np.random.uniform(-rnd_move, rnd_move)
-# system.vertices = vertices
+rnd_move = 0.5*np.std(edge_lengths)/6.0
+vertices = system.vertices
+for vertex in vertices:
+    vertex.r.x += np.random.uniform(-rnd_move, rnd_move)
+    vertex.r.y += np.random.uniform(-rnd_move, rnd_move)
+    vertex.r.z += np.random.uniform(-rnd_move, rnd_move)
+system.vertices = vertices
 
 ## Compute the initial energy
 min_energy = snapshots*[None]
-min_energy[0] = 100.0*compute.energy(evolver)['edges']/system.Numedges
-print("[Initial] energy:{} x 10^-2 volume:{} area:{}".format(min_energy[0], initial_volume, initial_area))
+min_energy[0] = compute.energy(evolver)['edges']/system.Numedges
+print("[Initial] energy:{} volume:{} area:{}".format(min_energy[0], initial_volume, initial_area))
 
 # Minimize
 dump.vtk("minimization_t0")
 for snapshot in range(1, snapshots):
     evolver.minimize()
     dump.vtk("minimization_t{}".format(snapshot))
-    min_energy[snapshot] =  100.0*compute.energy(evolver)['edges']/system.Numedges
+    min_energy[snapshot] =  compute.energy(evolver)['edges']/system.Numedges
     new_volume = compute.volume()
-    print("[{}] energy:{} x 10^-2 volume:{} area:{}".format(snapshot, min_energy[snapshot], new_volume, compute.area()))
-    
-    evolver.add_constraint("Mesh>Volume", {"V": str(new_volume*0.95), 
+    new_area = compute.area()
+    # tension = (new_area-initial_area)*kD
+    # print(str(tension))
+    print("[{}] energy:{} volume:{} area:{}".format(snapshot, min_energy[snapshot], new_volume, new_area))
+    print('face energy:')
+    print(str(compute.energy(evolver)['faces']/system.Numfaces))
+
+    # check face energy, and calculate stretching energy
+    area_difference = 0
+    print('Faces area difference:')
+    for fa in compute.face_area():
+        area_difference = area_difference + kD/2*(fa-target_area_per_face)**2
+    print(str(area_difference))
+
+    if snapshot==10:
+        evolver.add_constraint("Mesh>Area", {"A": str(initial_area), 
                                        "max_iter": str(10000), 
-                                       "tol":str(1e-5)})
+                                       "tol":str(1e-4)})
+        kD = 1e2/target_area_per_face
+        evolver.delete_force("Mesh>Constant Area")
+        evolver.add_force("Mesh>Constant Area", {
+            "sigma": {"1": str(kD)},
+            "target_area": {"1": str(target_area_per_face)}
+        })
+    
+    # evolver.add_constraint("Mesh>Volume", {"V": str(new_volume*0.98), 
+    #                                    "max_iter": str(10000), 
+    #                                    "tol":str(1e-5)})
+
 pprint(evolver.get_minimizer_info())
 
 # Compute the final volume
 energy = compute.energy(evolver)
-print("[Final] energy:{} x 10^-2 volume:{}".format(min_energy[snapshots-1], compute.volume()))
+print("[Final] energy:{} volume:{}".format(min_energy[snapshots-1], compute.volume()))
 final_volume = compute.volume()
 print("volume difference: {}".format(final_volume-initial_volume))
 
