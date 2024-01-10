@@ -4,6 +4,7 @@
 
 * 2023-08-15. Refactor names in `integrators/montecarlointegrator.hpp` to include the prefix `m_`.
 * 2023-08-15. Refactor names in `integrators/integratorclass.hpp` to include the prefix `m_`.
+* 2024-01-10. Add unit tests using GoogleTest or similar. Currently requires trial and error testing with debugger.
 
 ## Nice to have functionalities
 

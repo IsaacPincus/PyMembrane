@@ -98,19 +98,25 @@ void ComputeVertexConstantAreaTriangleForce_fn(const int Numfaces,
                                                const BoxType _box)
 {
 
-    real current_area = 0;
+    real3 r1;
+    real3 r2;
+    real3 r3;
+    real3 cross;
+
+    int v1, v2, v3;
+
     real force_factor = -_kappa_ag*2*(_current_area-_target_area)/(_target_area);
     
     for (int face_index = 0; face_index < Numfaces; face_index++)
     {
         int type = faces[face_index].type;
-        int v1 = faces[face_index].v1;
-        int v2 = faces[face_index].v2;
-        int v3 = faces[face_index].v3;
+        v1 = faces[face_index].v1;
+        v2 = faces[face_index].v2;
+        v3 = faces[face_index].v3;
 
-        real3 r1 = vertices[v1].r;
-        real3 r2 = vertices[v2].r;
-        real3 r3 = vertices[v3].r;
+        r1 = vertices[v1].r;
+        r2 = vertices[v2].r;
+        r3 = vertices[v3].r;
 
         auto r12 = pymemb::vector_subtract(r2, r1, _box);
         auto r13 = pymemb::vector_subtract(r3, r1, _box);
@@ -123,20 +129,19 @@ void ComputeVertexConstantAreaTriangleForce_fn(const int Numfaces,
         /*----------------------------------------------------------------------------------------------------------------*/
         /*-----------------------------------           ACTUAL CALCULATION        ----------------------------------------*/
         /*----------------------------------------------------------------------------------------------------------------*/
-        real3 cross;
         // v1
-        cross = pymemb::vector_cross(normal, r32);
+        cross = pymemb::vector_cross(r32, normal);
         vertices[v1].forceC.x += 0.5*force_factor * cross.x;
         vertices[v1].forceC.y += 0.5*force_factor * cross.y;
         vertices[v1].forceC.z += 0.5*force_factor * cross.z;
 
         // v2
-        cross = pymemb::vector_cross(normal, r13);
+        cross = pymemb::vector_cross(r13, normal);
         vertices[v2].forceC.x += 0.5*force_factor * cross.x;
         vertices[v2].forceC.y += 0.5*force_factor * cross.y;
         vertices[v2].forceC.z += 0.5*force_factor * cross.z;
 
-        // v3
+        // v3, be careful of direction!
         cross = pymemb::vector_cross(normal, r12);
         vertices[v3].forceC.x += 0.5*force_factor * cross.x;
         vertices[v3].forceC.y += 0.5*force_factor * cross.y;
