@@ -3,6 +3,7 @@
 
 // operators over the meshes
 #include "../mesh/meshoperators.hpp"
+#include "../mesh/meshoperations.hpp"
 
 // here include all the hpp files of the mesh integrators
 #include "../integrators/integrator_brownian_vertex.hpp"
@@ -161,6 +162,8 @@ void EvolverClass::set_global_temperature(const std::string &value)
 
 void EvolverClass::evolve_mesh_md(const int &mdsteps)
 {
+
+    MeshOperations mesh_operations_class(_system);
     for (auto step = 0; step < mdsteps; step++)
     {
         // Perform the preintegration step, i.e., step before forces and torques are computed
@@ -174,6 +177,10 @@ void EvolverClass::evolve_mesh_md(const int &mdsteps)
 
         // Perform the second step of integration
         this->evolve_mesh_poststep();
+
+        // test equiangulating after each N steps
+        if (step % 50 == 0) 
+            mesh_operations_class.equiangulation();
     }
 }
 

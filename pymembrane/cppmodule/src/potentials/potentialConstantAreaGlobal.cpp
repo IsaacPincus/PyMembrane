@@ -34,7 +34,7 @@ void ComputeVertexConstantGlobalAreaEnergy_fn(const int Numfaces,
     for (int face_index = 0; face_index < Numfaces; face_index++)
     {
         /// Add energy to that face
-        faces[face_index].energy += energy;
+        faces[face_index].energy += energy/Numfaces;
     }
 }
 

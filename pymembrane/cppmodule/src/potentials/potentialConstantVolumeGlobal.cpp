@@ -41,7 +41,7 @@ void ComputeVertexConstantGlobalVolumeEnergy_fn(const int Numfaces,
     for (int face_index = 0; face_index < Numfaces; face_index++)
     {
         /// Add energy to that face
-        faces[face_index].energy += energy;
+        faces[face_index].energy += energy/Numfaces;
     }
 }
 
@@ -145,18 +145,89 @@ void ComputeVertexConstantVolumeTriangleForce_fn(const int Numfaces,
         vertices[v3].forceC.y += 1.0/6.0*force_factor * cross.y;
         vertices[v3].forceC.z += 1.0/6.0*force_factor * cross.z;
     }
+
 }
 
 void ComputeVertexConstantGlobalVolumeEnergy::compute(void)
 {
 
     this->recalculate_mesh_volume();
+    
+    // ComputeVertexConstantVolumeTriangleForce_fn(_system.Numfaces,
+    //                                           &_system.vertices[0],
+    //                                           &_system.faces[0],
+    //                                           kappa_v,
+    //                                           target_volume,
+    //                                           current_volume,
+    //                                           _system.get_box());
 
-    ComputeVertexConstantVolumeTriangleForce_fn(_system.Numfaces,
-                                              &_system.vertices[0],
-                                              &_system.faces[0],
-                                              kappa_v,
-                                              target_volume,
-                                              current_volume,
-                                              _system.get_box());
+    //Current volume
+    real test_volume = 0;
+    real force_factor = -kappa_v*2*(current_volume-target_volume)/(target_volume);
+    //Compute the volume and the sum=G(Q)M^{-1}G(q)
+    double sum = 0.0;
+    for (int vertex_index = 0; vertex_index<_system.Numvertices; vertex_index++)
+    {
+        //! get the triangle that this vertex is part of
+        int he = _system.vertices[vertex_index]._hedge;
+        int first = he;
+        int face_index, he_pair, he_pair_next;
+        int vf[3];
+        int v, v1, v2;                     //index to the vertex which you are calculating the energy/force
+        double Nx = 0.0, Ny = 0.0, Nz = 0.0; //! volume gradient
+        real3 r, r1, r2;
+        real3 nt; //! face Normal
+        do
+        {
+            he_pair = _system.halfedges[he].pair;
+            //! DO SOMETHING WITH THAT FACE
+            face_index = _system.halfedges[he_pair].face;
+
+            if (face_index != -1) //! Remember -1 is the virtual face outside of the mesh
+            {
+                vf[0] = _system.faces[face_index].v1;
+                vf[1] = _system.faces[face_index].v2;
+                vf[2] = _system.faces[face_index].v3;
+                if (vertex_index == vf[0])
+                {
+                    v = vf[0];
+                    v1 = vf[1];
+                    v2 = vf[2];
+                }
+                else if (vertex_index == vf[1])
+                {
+                    v = vf[1];
+                    v1 = vf[2];
+                    v2 = vf[0];
+                }
+                else if (vertex_index == vf[2])
+                {
+                    v = vf[2];
+                    v1 = vf[0];
+                    v2 = vf[1];
+                }
+
+                //capture the vector positions
+                r = _system.vertices[v].r;
+                r1 = _system.vertices[v1].r;
+                r2 = _system.vertices[v2].r;
+
+                //compute the volume in an atomic operation
+                nt = pymemb::compute_normal_triangle(r, r1, r2);
+                test_volume+= vdot(r, nt) / 6.0 / 3.0;
+
+                //compute the volume gradient
+                Nx += (r1.y * r2.z - r2.y * r1.z);
+                Ny += (r2.x * r1.z - r1.x * r2.z);
+                Nz += (r1.x * r2.y - r2.x * r1.y);
+            }
+            //! MOVE TO THE NEXT FACE
+            he_pair_next = _system.halfedges[he_pair].next;
+            he = he_pair_next;
+        } while ((he != first));
+
+        _system.vertices[vertex_index].forceC.x += 1.0/6.0*force_factor * Nx;
+        _system.vertices[vertex_index].forceC.y += 1.0/6.0*force_factor * Ny;
+        _system.vertices[vertex_index].forceC.z += 1.0/6.0*force_factor * Nz;
+    }
 }

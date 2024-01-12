@@ -196,6 +196,11 @@ file(GLOB system_HDRS ${INCLUDE_DIRS}/system/*.hpp)
 file(GLOB system_SRCS ${INCLUDE_DIRS}/system/*.cpp)
 list(APPEND INCLUDE_DIRS_HDRS ${system_HDRS})
 list(APPEND INCLUDE_DIRS_SRCS ${system_SRCS})
+## mesh ##
+file(GLOB mesh_HDRS ${INCLUDE_DIRS}/mesh/*.hpp)
+file(GLOB mesh_SRCS ${INCLUDE_DIRS}/mesh/*.cpp)
+list(APPEND INCLUDE_DIRS_HDRS ${mesh_HDRS})
+list(APPEND INCLUDE_DIRS_SRCS ${mesh_SRCS})
 ## dump ##
 file(GLOB dumper_HDRS ${INCLUDE_DIRS}/dumper/*.hpp)
 file(GLOB dumper_SRCS ${INCLUDE_DIRS}/dumper/*.cpp)

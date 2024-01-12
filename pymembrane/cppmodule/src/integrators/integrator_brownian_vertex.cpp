@@ -24,4 +24,5 @@ void IntegratorBrownianMeshVertex::poststep(void)
     // particles may have been moved slightly outside the box by the above steps, wrap them back into place
     pymemb::enforce_periodic(_system.vertices[id].r, _system.vertices[id].ip, _system.get_box());
   }
+
 }

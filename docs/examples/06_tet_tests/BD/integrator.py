@@ -48,30 +48,30 @@ dump.vtk("initial mesh", False)
 #add the evolver class where the potentials and integrators are added
 evolver = mb.Evolver(system)
 evolver.add_integrator("Mesh>Brownian>vertex>move", {"seed":"5"})
-evolver.set_time_step(str(0.1))
+evolver.set_time_step(str(0.2))
 
 # compute module
 compute = system.compute
 
-# # global volume potential
-# initial_volume = compute.volume()
-# kappa_v = 1
-# target_global_volume = 1
-# print("Init volume:{} Target volume:{} ".format(initial_volume, target_global_volume))
-# evolver.add_force("Mesh>Constant Global Volume", {
-#     "kappa_v": str(kappa_v),
-#     "target_volume": str(target_global_volume)
-# })
-
-# global area potential
-initial_area = compute.area()
-kappa_ag = 1
-target_global_area = 4
-print("Init area:{} Target area:{} ".format(initial_area, target_global_area))
-evolver.add_force("Mesh>Constant Global Area", {
-    "kappa_ag": str(kappa_ag),
-    "target_area": str(target_global_area)
+# global volume potential
+initial_volume = compute.volume()
+kappa_v = 1
+target_global_volume = 0.5
+print("Init volume:{} Target volume:{} ".format(initial_volume, target_global_volume))
+evolver.add_force("Mesh>Constant Global Volume", {
+    "kappa_v": str(kappa_v),
+    "target_volume": str(target_global_volume)
 })
+
+# # global area potential
+# initial_area = compute.area()
+# kappa_ag = 1
+# target_global_area = 4
+# print("Init area:{} Target area:{} ".format(initial_area, target_global_area))
+# evolver.add_force("Mesh>Constant Global Area", {
+#     "kappa_ag": str(kappa_ag),
+#     "target_area": str(target_global_area)
+# })
 
 # # constant area potential
 # initial_area_per_face = compute.area()/len(system.faces)
@@ -94,14 +94,16 @@ evolver.set_global_temperature(str(0.0))
 for t in range(1,10):
     evolver.evolveMD(steps=run_steps)
     dump.vtk("mesh_t" + str(t*run_steps))
-    area = compute.area()
-    print("Init area:{} Target area:{} Current area:{} ".format(initial_area, target_global_area, area))
+    # area = compute.area()
+    # print("Init area:{} Target area:{} Current area:{} ".format(initial_area, target_global_area, area))
+    volume = compute.volume()
+    print("Init volume:{} Target volume:{} Current volume:{} ".format(initial_volume, target_global_volume, volume))
 
 # volume = compute.volume()
 # print("Init volume:{} Target volume:{} Current volume:{} ".format(initial_volume, target_global_volume, volume))
 
-area = compute.area()
-print("Init area:{} Target area:{} Current area:{} ".format(initial_area, target_global_area, area))
+# area = compute.area()
+# print("Init area:{} Target area:{} Current area:{} ".format(initial_area, target_global_area, area))
 
 # # first we need to know the edge length to move it appropriate:
 # 

@@ -20,7 +20,7 @@ public:
     }
     ~MeshOperations(void) {}
 
-    bool check_if_edge_can_flip(const int& flip_edge_index);
+    bool check_if_edge_can_flip(const int flip_edge_index);
     void edge_flip(const int& flip_edge_index, const bool& flip_face_up);
     void equiangulation(void);
 private:
