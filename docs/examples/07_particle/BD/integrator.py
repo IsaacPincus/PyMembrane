@@ -21,13 +21,13 @@ plt.style.use(['science'])
 # snapshots = user_args.snapshots
 # max_iter = user_args.max_iter
 
-os.chdir('/home/ipincus/fork_pymembrane/PyMembrane/docs/examples/05_vesicle_shapes/BD/')
+os.chdir('/home/ipincus/fork_pymembrane/PyMembrane/docs/examples/07_particle/BD/')
 
 ## Now we want to have x snapshots every y steps each
-# snapshots = 20
-# run_steps = 5000
-snapshots = 30
-run_steps = 5000
+snapshots = 50
+run_steps = 2000
+# snapshots = 5
+# run_steps = 500
 
 # vertex_file = 'vertices_R1.0_l01.inp'
 # face_file = 'faces_R1.0_l01.inp'
@@ -42,17 +42,39 @@ face_file = 'faces_sphere_N1024.inp'
 box = mb.Box(40,40,40)
 system = mb.System(box)
 system.read_mesh_from_files(files={'vertices':vertex_file, 'faces':face_file})
+compute = system.compute
 
 #save the mesh to display
 #create dumper
 dump = system.dumper
 dump.vtk("initial mesh", False)
 
+vertices = system.vertices
+current_max = 0.0
+for vertex in vertices:
+    z_val = vertex.r.z
+    if z_val>current_max:
+        current_max = z_val
+print("current max is: {}".format(current_max))
+
 #add the evolver class where the potentials and integrators are added
 evolver = mb.Evolver(system)
 
+# add particle and force
+system.add_particle(0.0,0.0,1.6, 0.4)
+# system.add_particle(0.0,2.0,0.0, 0.5)
+# system.add_particle(2.0,0.0,0.0, 0.5)
+evolver.add_force("Mesh>Particle", {
+    "epsilon": {"1": str(50.0)},
+    "sigma": {"1": str(0.2)},
+    "phi": {"1": str(50.0)}
+})
+
+## Compute the initial energy
+energy = compute.energy(evolver)
+print("[Initial] energy = ", energy)
+
 # first we need to know the edge length to move it appropriate:
-compute = system.compute
 edge_lengths = compute.edge_lengths()
 avg_edge_length= np.mean(edge_lengths)
 print("[Initial] avg_edge_length = ", avg_edge_length)
@@ -126,7 +148,7 @@ evolver.add_force("Mesh>Constant Global Area", {
 # global volume potential
 initial_volume = compute.volume()
 kappa_v = 1000
-target_global_volume = 2.4
+target_global_volume = 3
 print("target global volume:")
 print(str(target_global_volume))
 evolver.add_force("Mesh>Constant Global Volume", {
@@ -143,10 +165,8 @@ evolver.add_force("Mesh>Constant Global Volume", {
 #     vertex.r.z += np.random.uniform(-rnd_move, rnd_move)
 # system.vertices = vertices
 
-## Compute the initial energy
-min_energy = snapshots*[None]
-min_energy[0] = compute.energy(evolver)['edges']/system.Numedges
-print("[Initial] energy:{} volume:{} area:{}".format(min_energy[0], initial_volume, initial_area))
+## Compute the initial area and volume
+print("[Initial] volume:{} area:{}".format(initial_volume, initial_area))
 
 ## Compute the initial energy
 energy = compute.energy(evolver)
@@ -164,7 +184,7 @@ for snapshot in range(1, snapshots):
     area = compute.area()
     print("[Current] energy:{} volume:{} area:{}".format(energy, volume, area))
     if snapshot==3:
-        dt = str(3e-5)
+        dt = str(1e-5)
         evolver.set_time_step(dt)
     #     evolver.delete_force("Mesh>Bending>Helfrich")
     #     kappa = str(3)
@@ -175,22 +195,6 @@ for snapshot in range(1, snapshots):
     #     dt = str(1e-3)
     #     evolver.set_time_step(dt)
 
-# Compute the final volume
-energy = compute.energy(evolver)
-print("[Final] energy:{} volume:{}".format(min_energy[snapshots-1], compute.volume()))
-final_volume = compute.volume()
-print("volume difference: {}".format(final_volume-initial_volume))
-
 dump.txt("minimized")
 
-# fig, ax = plt.subplots(figsize=(3.3,3.3))
-# ax.plot(min_energy, 'o-')
-# ax.set_xlabel(r"$Steps$", fontsize=10, labelpad = 2.5)
-# ax.set_ylabel(r"$Energy/NumEdges \times 10^{-2}$", fontsize=11, labelpad = 2.5)
-# ax.tick_params(axis='x', labelsize=8, pad = 4)
-# ax.tick_params(axis='y', labelsize=8, pad = 4)
-# ax.ticklabel_format(useMathText=True)
-# ax.xaxis.set_major_formatter(ticker.ScalarFormatter())
-# ax.yaxis.set_major_formatter(ticker.ScalarFormatter())
-# plt.tight_layout()
-# plt.savefig("energy.svg", dpi=400)
+

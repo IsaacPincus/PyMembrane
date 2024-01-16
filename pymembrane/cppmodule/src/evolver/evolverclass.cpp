@@ -178,9 +178,9 @@ void EvolverClass::evolve_mesh_md(const int &mdsteps)
         // Perform the second step of integration
         this->evolve_mesh_poststep();
 
-        // test equiangulating after each N steps
-        if (step % 50 == 0) 
-            mesh_operations_class.equiangulation();
+        // // test equiangulating after each N steps
+        // if (step % 50 == 0) 
+        //     mesh_operations_class.equiangulation();
     }
 }
 

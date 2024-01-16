@@ -39,6 +39,9 @@
 //compute
 #include "../compute/computemesh.hpp"
 
+//particles
+#include "../particles/particle.hpp"
+
 //dumper
 #include "../dumper/dumper.hpp"
 #include <pybind11/pybind11.h>
@@ -295,6 +298,17 @@ public:
     pymemb::vector<realTensor> stress_group_edges;
     pymemb::vector<realTensor> stress_virial_atom;
     pymemb::vector<realTensor> stress_kinetic_atom;
+
+    // list of particles
+    pymemb::vector<Particle> particles;
+    // void add_particle(real3 position, real radius)
+    // {
+    //     particles.push_back(Particle(*this, position, radius));
+    // }
+    void add_particle(real x, real y, real z, real radius)
+    {
+        particles.push_back(Particle(x,y,z, radius));
+    }
 
     int Numvertices;    //!< Number of vertices
     int Numedges;       //!< Number of edges

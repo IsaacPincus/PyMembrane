@@ -50,8 +50,8 @@ namespace py = pybind11;
 #include "../potentials/potentialConstantAreaTriangle.hpp"
 #include "../potentials/potentialConstantAreaGlobal.hpp"
 #include "../potentials/potentialConstantVolumeGlobal.hpp"
+#include "../potentials/potentialParticle.hpp"
 #include "../potentials/potentialSubstrate.hpp"
-
 
 class EvolverClass
 {
@@ -97,6 +97,11 @@ public:
         else if (name.compare("Mesh>Constant Global Volume") == 0)
         {
             mesh_force_list[name] = std::make_unique<ComputeVertexConstantGlobalVolumeEnergy>(_system);
+            mesh_force_list[name]->set_property(parameters);
+        }
+        else if (name.compare("Mesh>Particle") == 0)
+        {
+            mesh_force_list[name] = std::make_unique<ComputeVertexParticleEnergy>(_system);
             mesh_force_list[name]->set_property(parameters);
         }
         else if (name.compare("Mesh>Bending") == 0)

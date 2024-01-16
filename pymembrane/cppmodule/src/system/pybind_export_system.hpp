@@ -34,7 +34,11 @@ void export_SystemClass(pybind11::module &m)
         .def("read_mesh_from_files", &SystemClass::read_mesh_from_files, pybind11::arg("files"), "read the mesh from a file, needs file route <faces, vertices>")
         .def("read_mesh_from_json", &SystemClass::read_mesh_from_json, pybind11::arg("file"), "read the mesh from a json file lists")
         .def_readonly("mesh_is_close", &SystemClass::close_surface, "return true if is close false otherwise")
-        
+
+        // .def("add_particle", &SystemClass::add_particle, "Add a particle with position and radius",
+        //      pybind11::arg("position"), pybind11::arg("radius"))
+        .def("add_particle", &SystemClass::add_particle, "Add a particle with x y z position and radius",
+             pybind11::arg("x"), pybind11::arg("y"), pybind11::arg("z"), pybind11::arg("radius"))
 
         /*.def("getVertices", &SystemClass::get_vertices, "get the vertices in memb format")
         .def("getEdges", &SystemClass::get_edges, "get the edges in memb format")

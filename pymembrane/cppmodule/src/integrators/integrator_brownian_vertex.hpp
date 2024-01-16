@@ -24,7 +24,6 @@
 #ifndef __integrator_brownian_vertex__hpp__
 #define __integrator_brownian_vertex__hpp__
 
-
 #include <iostream>
 
 #include "integratorclass.hpp"

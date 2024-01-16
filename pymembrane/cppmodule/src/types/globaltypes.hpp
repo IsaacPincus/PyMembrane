@@ -27,7 +27,6 @@
 #include <sstream>
 #include <math.h>
 
-
 #define BIG_ENERGY_LIMIT 1e15 //!< Effectively acts as infinity
 #define defPI 3.141592653589793
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
