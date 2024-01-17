@@ -44,6 +44,7 @@ namespace py = pybind11;
 #include "../potentials/potentialBendingHelfrich.hpp"
 #include "../potentials/potentialDihedralHarmonics.hpp"
 #include "../potentials/potentialCauchyGreen.hpp"
+#include "../potentials/potentialFENEPOW.hpp"
 #include "../potentials/potentialHarmonic.hpp"
 #include "../potentials/potentialLimit.hpp"
 #include "../potentials/potentialLineTension.hpp"
@@ -52,6 +53,7 @@ namespace py = pybind11;
 #include "../potentials/potentialConstantVolumeGlobal.hpp"
 #include "../potentials/potentialParticle.hpp"
 #include "../potentials/potentialSubstrate.hpp"
+#include "../potentials/potentialTether.hpp"
 
 class EvolverClass
 {
@@ -72,6 +74,11 @@ public:
         else if (name.compare("Mesh>Harmonic") == 0)
         {
             mesh_force_list[name] = std::make_unique<ComputeVertexHarmonicEnergy>(_system);
+            mesh_force_list[name]->set_property(parameters);
+        }
+        else if (name.compare("Mesh>FENEPOW") == 0)
+        {
+            mesh_force_list[name] = std::make_unique<ComputeVertexFENEPOWEnergy>(_system);
             mesh_force_list[name]->set_property(parameters);
         }
         else if (name.compare("Mesh>Limit") == 0)
@@ -122,6 +129,11 @@ public:
         else if (name.compare("Mesh>Substrate") == 0)
         {
             mesh_force_list[name] = std::make_unique<ComputeVertexSubstrateEnergy>(_system);
+            mesh_force_list[name]->set_property(parameters);
+        }
+        else if (name.compare("Mesh>Tether") == 0)
+        {
+            mesh_force_list[name] = std::make_unique<ComputeVertexTetherEnergy>(_system);
             mesh_force_list[name]->set_property(parameters);
         }
         else

@@ -26,8 +26,8 @@ os.chdir('/home/ipincus/fork_pymembrane/PyMembrane/docs/examples/05_vesicle_shap
 ## Now we want to have x snapshots every y steps each
 # snapshots = 20
 # run_steps = 5000
-snapshots = 30
-run_steps = 5000
+snapshots = 50
+run_steps = 300
 
 # vertex_file = 'vertices_R1.0_l01.inp'
 # face_file = 'faces_R1.0_l01.inp'
@@ -53,13 +53,6 @@ evolver = mb.Evolver(system)
 
 # first we need to know the edge length to move it appropriate:
 compute = system.compute
-edge_lengths = compute.edge_lengths()
-avg_edge_length= np.mean(edge_lengths)
-print("[Initial] avg_edge_length = ", avg_edge_length)
-k = str(400.0)
-l0 = str(avg_edge_length)
-# evolver.add_force("Mesh>Harmonic", {"k":{"0":k}, 
-#                                     "l0":{"0":l0}})
 
 # # limit potential
 # lmin = str(0.5*np.min(edge_lengths))
@@ -126,7 +119,7 @@ evolver.add_force("Mesh>Constant Global Area", {
 # global volume potential
 initial_volume = compute.volume()
 kappa_v = 1000
-target_global_volume = 2.4
+target_global_volume = 3.5
 print("target global volume:")
 print(str(target_global_volume))
 evolver.add_force("Mesh>Constant Global Volume", {
@@ -164,16 +157,22 @@ for snapshot in range(1, snapshots):
     area = compute.area()
     print("[Current] energy:{} volume:{} area:{}".format(energy, volume, area))
     if snapshot==3:
+        edge_lengths = compute.edge_lengths()
+        avg_edge_length= np.mean(edge_lengths)
+        l0 = avg_edge_length
+        print("max edge length: " + str(np.max(edge_lengths)) + "  min edge length: " + str(np.min(edge_lengths)))
+        ks = 1.0
+        m = 2.0
+        lmax = 5.0*np.max(edge_lengths)
+        kp = l0**(m+1)*ks*lmax**2/(1-(l0/lmax)**2)
+        print(kp)
+        evolver.add_force("Mesh>FENEPOW", {"ks":{"0":str(ks)}, 
+                                            "lmax":{"0":str(lmax)},
+                                            "m":{"0":str(m)},
+                                            "kp":{"0":str(kp)}})
+    if snapshot==5:
         dt = str(3e-5)
         evolver.set_time_step(dt)
-    #     evolver.delete_force("Mesh>Bending>Helfrich")
-    #     kappa = str(3)
-    #     evolver.add_force("Mesh>Bending>Helfrich", {"kappaH":{"1":kappa},
-    #                                                 "H0":{"1":str(0)},
-    #                                                 "kappaG":{"1":str(0)}})
-    # if snapshot==10:
-    #     dt = str(1e-3)
-    #     evolver.set_time_step(dt)
 
 # Compute the final volume
 energy = compute.energy(evolver)

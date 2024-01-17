@@ -98,9 +98,18 @@ pymembrane/cppmodule/__pycache__/
 *.vtp
 *.vtu
 
+# movie files
+*.webm
+*.mp4
+
+# png files for making movies
+a*.png
+
 # vscode
 pymembrane/cppmodule/build/* 
 
 # exception to the rule
 !pymembrane/cppmodule/build/.gitkeep 
+
+
 

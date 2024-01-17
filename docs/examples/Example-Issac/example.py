@@ -1,7 +1,10 @@
 #import the code
+import os
 import pymembrane as mb
 import numpy as np
 from pprint import pprint
+
+os.chdir('/home/ipincus/fork_pymembrane/PyMembrane/docs/examples/Example-Issac')
 
 #create a system 
 box = mb.Box(100.0, 100.0, 100.0)
