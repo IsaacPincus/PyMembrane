@@ -100,6 +100,7 @@ void ComputeVertexParticleEnergy::compute()
     real d;
     real3 ud;
     real3 F;
+    real3 opp_F;
 
     for (int i = 0; i<_particles.size(); i++)
     {
@@ -117,6 +118,9 @@ void ComputeVertexParticleEnergy::compute()
             _system.vertices[vertex_index].forceC.x += F.x;
             _system.vertices[vertex_index].forceC.y += F.y;
             _system.vertices[vertex_index].forceC.z += F.z;
+            // add an equal and opposite force to the particle
+            Xvec1(opp_F, -1.0, F);
+            _system.particles[i].add_force(r, opp_F);
         }
         
     }

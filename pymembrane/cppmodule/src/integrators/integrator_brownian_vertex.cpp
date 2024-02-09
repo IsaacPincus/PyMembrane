@@ -25,4 +25,12 @@ void IntegratorBrownianMeshVertex::poststep(void)
     pymemb::enforce_periodic(_system.vertices[id].r, _system.vertices[id].ip, _system.get_box());
   }
 
+  // if there are nanoparticles (not particles as in vertices!!), update them too
+  for (int i = 0; i<_system.particles.size(); i++)
+  {
+    _system.particles[i].position.x += _system.particles[i]._friction*m_mu* this->get_time_step() * _system.particles[i]._total_force.x;
+    _system.particles[i].position.y += _system.particles[i]._friction*m_mu* this->get_time_step() * _system.particles[i]._total_force.y;
+    _system.particles[i].position.z += _system.particles[i]._friction*m_mu* this->get_time_step() * _system.particles[i]._total_force.z;
+  }
+
 }

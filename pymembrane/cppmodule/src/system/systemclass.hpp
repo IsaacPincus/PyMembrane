@@ -309,6 +309,9 @@ public:
     {
         particles.push_back(Particle(x,y,z, radius));
     }
+    real3 get_particle_position(int particle_number) { return (particles[particle_number].position); }
+
+
 
     int Numvertices;    //!< Number of vertices
     int Numedges;       //!< Number of edges

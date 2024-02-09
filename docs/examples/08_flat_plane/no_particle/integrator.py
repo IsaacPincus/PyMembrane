@@ -14,7 +14,7 @@ os.chdir('/home/ipincus/fork_pymembrane/PyMembrane/docs/examples/08_flat_plane/n
 ## Now we want to have x snapshots every y steps each
 # snapshots = 50
 # run_steps = 2000
-snapshots = 50
+snapshots = 10
 run_steps = 2000
 
 vertex_file = 'vertices.inp'
@@ -60,15 +60,15 @@ evolver.add_force("Mesh>Tether", {
     "Fz": {"5": str(0.0), "6":str(0.0), "7":str(0.0), "8":str(0.0)}
 })
 
-# add particle and force
-system.add_particle(0.0,0.0,0.5, 0.3)
-# system.add_particle(0.0,2.0,0.0, 0.5)
-# system.add_particle(2.0,0.0,0.0, 0.5)
-evolver.add_force("Mesh>Particle", {
-    "epsilon": {"1": str(20.0)},
-    "sigma": {"1": str(0.1)},
-    "phi": {"1": str(20.0)}
-})
+# # add particle and force
+# system.add_particle(0.0,0.0,0.5, 0.3)
+# # system.add_particle(0.0,2.0,0.0, 0.5)
+# # system.add_particle(2.0,0.0,0.0, 0.5)
+# evolver.add_force("Mesh>Particle", {
+#     "epsilon": {"1": str(20.0)},
+#     "sigma": {"1": str(0.1)},
+#     "phi": {"1": str(20.0)}
+# })
 
 edge_lengths = compute.edge_lengths()
 avg_edge_length= np.mean(edge_lengths)

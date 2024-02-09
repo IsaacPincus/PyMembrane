@@ -88,7 +88,7 @@ private:
     pymemb::vector<real> epsilon; //!< bending rigidity
     pymemb::vector<real> sigma; //!< bending rigidity
     pymemb::vector<real> phi; //!< bending rigidity
-    pymemb::vector<Particle> _particles;
+    pymemb::vector<Particle> _particles; // pass this by reference so we can update it
 };
 
 #endif

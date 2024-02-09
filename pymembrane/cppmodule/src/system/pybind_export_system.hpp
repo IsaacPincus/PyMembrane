@@ -39,6 +39,7 @@ void export_SystemClass(pybind11::module &m)
         //      pybind11::arg("position"), pybind11::arg("radius"))
         .def("add_particle", &SystemClass::add_particle, "Add a particle with x y z position and radius",
              pybind11::arg("x"), pybind11::arg("y"), pybind11::arg("z"), pybind11::arg("radius"))
+        .def("get_particle_position", &SystemClass::get_particle_position, "get position of particle")
 
         /*.def("getVertices", &SystemClass::get_vertices, "get the vertices in memb format")
         .def("getEdges", &SystemClass::get_edges, "get the edges in memb format")
@@ -80,7 +81,7 @@ void export_SystemClass(pybind11::module &m)
         .def_property("edges", &SystemClass::get_edges, &SystemClass::set_edges)
         .def_property("faces", &SystemClass::get_faces, &SystemClass::set_vertices)
         .def_property("halfedges", &SystemClass::get_halfedges, &SystemClass::set_halfedges)
-
+        
 
         .def("vertices_to_numpy", [](SystemClass &self) {
             std::vector<std::vector<double>> vertices;

@@ -25,6 +25,11 @@
 void EvolverClass::reset_mesh_forces(void)
 {
     std::transform(_system.vertices.begin(), _system.vertices.end(), _system.vertices.begin(), pymemb::reset_vertex_forces());
+    // also reset forces on particles
+    for (int i = 0; i<_system.particles.size(); i++)
+    {
+        _system.particles[i].reset_forces();
+    }
 }
 
 // compute
