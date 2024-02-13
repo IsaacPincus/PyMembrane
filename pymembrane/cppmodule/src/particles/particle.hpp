@@ -27,7 +27,16 @@ class Particle {
             _total_force.x = 0.0;
             _total_force.y = 0.0;
             _total_force.z = 0.0;
-            _friction = 1.0/(6.0*defPI*_radius);
+            _friction = 1.0/(6.0*defPI*_radius*1000.0);
+        }
+        Particle(real x, real y, real z, real radius, real friction) : _radius(radius), _friction(friction)
+        {
+            position.x = x;
+            position.y = y;
+            position.z = z;
+            _total_force.x = 0.0;
+            _total_force.y = 0.0;
+            _total_force.z = 0.0;
         }
 
         void set_default_properties(void)

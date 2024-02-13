@@ -28,9 +28,9 @@ real3 Particle::get_closest_point_on_surface(const real3 &vertex_position)
     real3 unit_vec_to_surface = this->get_unit_vector_to_particle_surface(vertex_position);
     // reverse unit vector and then multiply by radius
     real3 point_on_surface;
-    point_on_surface.x = -unit_vec_to_surface.x*this->_radius;
-    point_on_surface.y = -unit_vec_to_surface.y*this->_radius;
-    point_on_surface.z = -unit_vec_to_surface.z*this->_radius;
+    point_on_surface.x = -unit_vec_to_surface.x * this->_radius + this->position.x;
+    point_on_surface.y = -unit_vec_to_surface.y * this->_radius + this->position.y;
+    point_on_surface.z = -unit_vec_to_surface.z * this->_radius + this->position.z;
 }
 
 void Particle::add_force(const real3 &vertex_position, const real3 &force)

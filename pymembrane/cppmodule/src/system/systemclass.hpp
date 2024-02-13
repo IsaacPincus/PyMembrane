@@ -305,10 +305,7 @@ public:
     // {
     //     particles.push_back(Particle(*this, position, radius));
     // }
-    void add_particle(real x, real y, real z, real radius)
-    {
-        particles.push_back(Particle(x,y,z, radius));
-    }
+    void add_particle(real x, real y, real z, real radius, real friction) {particles.push_back(Particle(x,y,z, radius, friction));}
     real3 get_particle_position(int particle_number) { return (particles[particle_number].position); }
 
 

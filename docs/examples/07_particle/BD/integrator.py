@@ -2,7 +2,6 @@
 import pymembrane as mb
 import os
 import numpy as np
-import vtk
 from pprint import pprint
 import argparse
 import matplotlib.pyplot as plt
@@ -23,7 +22,7 @@ plt.style.use(['science'])
 # max_iter = user_args.max_iter
 
 os.chdir('/home/ipincus/fork_pymembrane/PyMembrane/docs/examples/07_particle/BD/')
-os.mkdir('results', exist_ok=True)
+os.makedirs('results', exist_ok=True)
 
 ## Now we want to have x snapshots every y steps each
 snapshots = 50
@@ -113,7 +112,7 @@ evolver.add_force("Mesh>Tether", {
 # add particle and force
 pr = [-0.35,-0.4,0.53]
 p_radius = 0.46
-system.add_particle(pr[0],pr[1],pr[2], p_radius)
+system.add_particle(pr[0],pr[1],pr[2], p_radius, 1.0/(6.0*np.pi*p_radius*100.0))
 # system.add_particle(0.0,2.0,0.0, 0.5)
 # system.add_particle(2.0,0.0,0.0, 0.5)
 evolver.add_force("Mesh>Particle", {
@@ -223,7 +222,7 @@ for snapshot in range(1, snapshots):
     avg_edge_length= np.mean(edge_lengths)
     particle_positions.append(system.get_particle_position(0))
     print("[Current] energy:{} volume:{} area:{} edge length:{}".format(energy, volume, area, avg_edge_length))
-    print("Particle center: {}".format(particle_positions[0]))
+    print("Particle center: {}".format(particle_positions[-1]))
     if snapshot==3:
         dt = str(1e-5)
         evolver.set_time_step(dt)
@@ -254,43 +253,54 @@ for vertex in vertices:
 
 print("distance between points:", np.linalg.norm(com_p1-com_p2))
 
-# # code from chatGPT to create a sphere file as well... lets see if it works!
+# Specify the file path where you want to save the data
+file_path = "results/sphere_location.txt"
 
-# Function to create a sphere source with varying position over time
-def create_time_varying_sphere(radius, centers):
-    spheres = []
+# Write the data to the file line by line
+with open(file_path, 'w') as file:
+    for row in particle_positions:
+        # Convert each element to a string and join them with a space
+        line = ' '.join(map(str, np.array(row)))
+        
+        # Write the line to the file
+        file.write(line + '\n')
 
-    for current_center in centers:
+# # # code from chatGPT to create a sphere file as well... lets see if it works!
+# # Function to create a sphere source with varying position over time
+# def create_time_varying_sphere(radius, centers):
+#     spheres = []
 
-        # Create a sphere source for the current time step
-        sphere = vtk.vtkSphereSource()
-        sphere.SetRadius(radius)
-        sphere.SetCenter(current_center)
-        sphere.Update()
+#     for current_center in centers:
 
-        spheres.append(sphere.GetOutput())
+#         # Create a sphere source for the current time step
+#         sphere = vtk.vtkSphereSource()
+#         sphere.SetRadius(radius)
+#         sphere.SetCenter(current_center)
+#         sphere.Update()
 
-    return spheres
+#         spheres.append(sphere.GetOutput())
 
-# Function to write a sequence of spheres to a VTK file
-def write_time_varying_spheres_to_vtk(spheres, filename):
-    writer = vtk.vtkXMLMultiBlockDataWriter()
-    writer.SetFileName(filename)
+#     return spheres
 
-    # Create a multi-block dataset to store spheres at different time steps
-    multi_block = vtk.vtkMultiBlockDataSet()
+# # Function to write a sequence of spheres to a VTK file
+# def write_time_varying_spheres_to_vtk(spheres, filename):
+#     writer = vtk.vtkXMLMultiBlockDataWriter()
+#     writer.SetFileName(filename)
 
-    for i, sphere in enumerate(spheres):
-        # Create a block for each time step
-        block = vtk.vtkPolyData()
-        block.ShallowCopy(sphere)
-        multi_block.SetBlock(i, block)
+#     # Create a multi-block dataset to store spheres at different time steps
+#     multi_block = vtk.vtkMultiBlockDataSet()
 
-    # Write the multi-block dataset to the VTK file
-    writer.SetInputData(multi_block)
-    writer.Write()
+#     for i, sphere in enumerate(spheres):
+#         # Create a block for each time step
+#         block = vtk.vtkPolyData()
+#         block.ShallowCopy(sphere)
+#         multi_block.SetBlock(i, block)
 
-# Example usage: Create time-varying spheres, write them to a VTK file
-spheres_output = create_time_varying_sphere(p_radius, particle_positions)
-write_time_varying_spheres_to_vtk(spheres_output, "results/time_varying_spheres.vtm")
+#     # Write the multi-block dataset to the VTK file
+#     writer.SetInputData(multi_block)
+#     writer.Write()
+
+# # Example usage: Create time-varying spheres, write them to a VTK file
+# spheres_output = create_time_varying_sphere(p_radius, particle_positions)
+# write_time_varying_spheres_to_vtk(spheres_output, "results/time_varying_spheres.vtm")
 

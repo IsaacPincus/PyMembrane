@@ -37,8 +37,8 @@ void export_SystemClass(pybind11::module &m)
 
         // .def("add_particle", &SystemClass::add_particle, "Add a particle with position and radius",
         //      pybind11::arg("position"), pybind11::arg("radius"))
-        .def("add_particle", &SystemClass::add_particle, "Add a particle with x y z position and radius",
-             pybind11::arg("x"), pybind11::arg("y"), pybind11::arg("z"), pybind11::arg("radius"))
+        .def("add_particle", &SystemClass::add_particle, "Add a particle with x y z position and radius, plus friction",
+             pybind11::arg("x"), pybind11::arg("y"), pybind11::arg("z"), pybind11::arg("radius"), pybind11::arg("friction"))    
         .def("get_particle_position", &SystemClass::get_particle_position, "get position of particle")
 
         /*.def("getVertices", &SystemClass::get_vertices, "get the vertices in memb format")

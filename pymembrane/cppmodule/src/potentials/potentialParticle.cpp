@@ -37,7 +37,7 @@ real get_SDK_energy(real r,
     {
         U = 0.0;
     }
-    return U;
+    return U*epsilon;
 }
 
 real3 get_SDK_force(real d,
@@ -67,7 +67,7 @@ real3 get_SDK_force(real d,
     {
         Fm = 0.0;
     }
-    Xvec1(F, -Fm, u_vec);
+    Xvec1(F, -Fm*epsilon, u_vec);
     return F;
 }
 
@@ -101,6 +101,10 @@ void ComputeVertexParticleEnergy::compute()
     real3 ud;
     real3 F;
     real3 opp_F;
+
+    // initialize
+    aXvec(0.0, F);
+    aXvec(0.0, opp_F);
 
     for (int i = 0; i<_particles.size(); i++)
     {
